@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PureChain Peptides — Premium Research Compounds</title>
+  <meta name="description" content="Pharmaceutical-grade peptides for research. Lab-verified, discreet shipping across Canada." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Variables ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #05050f;
+      --surface: #0c0c1d;
+      --card: #111127;
+      --card-hover: #161633;
+      --border: rgba(255,255,255,0.07);
+      --border-glow: rgba(124,58,237,0.35);
+      --purple: #7c3aed;
+      --purple-light: #9f5cf7;
+      --cyan: #06b6d4;
+      --cyan-light: #22d3ee;
+      --gold: #f59e0b;
+      --green: #10b981;
+      --red: #ef4444;
+      --text: #f1f1f5;
+      --muted: #8b8ba8;
+      --subtle: #3d3d5c;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --font: 'Inter', system-ui, sans-serif;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --shadow: 0 24px 64px rgba(0,0,0,0.6);
+      --glow-purple: 0 0 40px rgba(124,58,237,0.25);
+      --glow-cyan: 0 0 40px rgba(6,182,212,0.2);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: var(--font); border: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+    /* ─── Utility ─── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--purple-light), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+      color: var(--purple-light); font-size: 12px; font-weight: 600;
+      padding: 5px 12px; border-radius: 100px; letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ─── Navigation ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 24px;
+      background: rgba(5,5,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      height: 70px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-cart {
+      position: relative; background: var(--card); border: 1px solid var(--border);
+      color: var(--text); padding: 9px 16px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-cart:hover { background: var(--card-hover); border-color: var(--border-glow); }
+    .cart-badge {
+      position: absolute; top: -6px; right: -6px;
+      background: var(--purple); color: white;
+      width: 20px; height: 20px; border-radius: 50%;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s; transform: scale(0.8);
+    }
+    .cart-badge.visible { opacity: 1; transform: scale(1); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), #6d28d9);
+      color: white; padding: 10px 20px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600; transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(124,58,237,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ─── Hero ─── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 120px 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 60%, rgba(6,182,212,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(124,58,237,0.07) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0; opacity: 0.03;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      position: relative; z-index: 1; max-width: 1200px;
+      margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center; width: 100%;
+    }
+    .hero-left { max-width: 580px; }
+    .hero-eyebrow { margin-bottom: 20px; }
+    h1 {
+      font-family: var(--font-display); font-size: clamp(40px, 5vw, 64px);
+      font-weight: 700; line-height: 1.1; letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: 18px; color: var(--muted); line-height: 1.7;
+      margin-bottom: 36px; max-width: 480px;
+    }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--purple), #5b21b6);
+      color: white; padding: 14px 28px; border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 600; transition: all 0.25s;
+      box-shadow: 0 6px 30px rgba(124,58,237,0.4);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(124,58,237,0.55); }
+    .btn-hero-secondary {
+      background: transparent; color: var(--text);
+      padding: 14px 28px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); font-size: 15px; font-weight: 500;
+      transition: all 0.25s; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-hero-secondary:hover { background: var(--card); border-color: var(--border-glow); }
+    .hero-stats { display: flex; gap: 40px; }
+    .hero-stat { text-align: left; }
+    .hero-stat-num {
+      font-family: var(--font-display); font-size: 28px; font-weight: 700;
+      background: linear-gradient(135deg, var(--text), var(--cyan-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+    /* Hero visual */
+    .hero-visual {
+      display: flex; justify-content: center; align-items: center;
+      position: relative;
+    }
+    .hero-card-stack { position: relative; width: 340px; height: 380px; }
+    .hero-card-bg {
+      position: absolute; width: 280px; height: 320px; border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .hero-card-bg:nth-child(1) {
+      top: 40px; right: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(6,182,212,0.05));
+      transform: rotate(6deg);
+    }
+    .hero-card-bg:nth-child(2) {
+      top: 20px; right: 20px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.08));
+      transform: rotate(3deg);
+    }
+    .hero-card-main {
+      position: absolute; top: 0; left: 0; width: 290px; height: 330px;
+      border-radius: 20px; background: var(--card);
+      border: 1px solid rgba(124,58,237,0.2);
+      box-shadow: var(--glow-purple), var(--shadow);
+      padding: 24px; display: flex; flex-direction: column; gap: 16px;
+      z-index: 1;
+    }
+    .hero-card-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .hero-card-title { font-weight: 700; font-size: 16px; }
+    .hero-card-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .hero-card-price {
+      margin-top: auto; font-family: var(--font-display);
+      font-size: 28px; font-weight: 700;
+    }
+    .hero-card-price span { font-size: 14px; color: var(--muted); font-weight: 400; }
+    .hero-card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.2);
+      color: var(--purple-light); font-size: 11px; font-weight: 600;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .tag.cyan {
+      background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.2);
+      color: var(--cyan-light);
+    }
+    .tag.green {
+      background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2);
+      color: #34d399;
+    }
+    .floating-pill {
+      position: absolute; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 100px;
+      padding: 8px 14px; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .floating-pill.tl { top: -10px; right: -20px; color: var(--cyan-light); }
+    .floating-pill.br { bottom: 20px; right: -30px; color: #34d399; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+    /* ─── Trust Bar ─── */
+    .trust-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 24px;
+    }
+    .trust-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 500; color: var(--muted);
+    }
+    .trust-icon { font-size: 18px; }
+
+    /* ─── Section shared ─── */
+    section { padding: 96px 24px; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-eyebrow { margin-bottom: 14px; }
+    h2 {
+      font-family: var(--font-display); font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.025em;
+      margin-bottom: 14px;
+    }
+    .section-sub { font-size: 17px; color: var(--muted); max-width: 540px; margin: 0 auto; }
+
+    /* ─── Products ─── */
+    #products { background: var(--bg); }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: all 0.3s; cursor: pointer;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover {
+      border-color: rgba(124,58,237,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), var(--glow-purple);
+    }
+    .product-img {
+      height: 180px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-img-inner {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px;
+      position: relative;
+    }
+    .product-img-inner::before {
+      content: ''; position: absolute; inset: 0;
+      opacity: 0.06;
+      background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.8) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .product-label {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+      color: var(--text);
+    }
+    .product-stock {
+      position: absolute; top: 12px; right: 12px;
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 100px; padding: 4px 10px;
+      font-size: 10px; font-weight: 600; color: #34d399;
+    }
+    .stock-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399;
+      animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .product-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .product-name {
+      font-family: var(--font-display); font-size: 16px; font-weight: 700;
+      line-height: 1.3;
+    }
+    .product-desc { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; }
+    .product-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .product-amount { font-size: 12px; color: var(--subtle); font-weight: 500; }
+    .product-footer {
+      padding: 16px 20px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .product-price {
+      font-family: var(--font-display); font-size: 22px; font-weight: 700;
+    }
+    .product-price sup { font-size: 13px; font-weight: 500; vertical-align: top; margin-top: 4px; }
+    .btn-add {
+      background: linear-gradient(135deg, var(--purple), #5b21b6);
+      color: white; padding: 9px 18px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 600; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-add:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,0.5); }
+    .btn-add.added {
+      background: linear-gradient(135deg, var(--green), #059669);
+      box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+    }
+
+    /* Product filters */
+    .product-filters {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px;
+    }
+    .filter-btn {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); padding: 8px 18px; border-radius: 100px;
+      font-size: 13px; font-weight: 500; transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.35);
+      color: var(--purple-light);
+    }
+
+    /* ─── Why Us ─── */
+    #why { background: var(--surface); }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .why-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: all 0.3s;
+    }
+    .why-card:hover { border-color: var(--border-glow); transform: translateY(-2px); }
+    .why-icon {
+      width: 52px; height: 52px; border-radius: 14px; margin-bottom: 18px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .why-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .why-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ─── How It Works ─── */
+    #how { background: var(--bg); }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; position: relative; }
+    .step { text-align: center; padding: 24px; position: relative; }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 20px; font-weight: 700;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    }
+    .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 200px; margin: 0 auto; }
+    .step-connector {
+      position: absolute; top: 50px; right: -1px; z-index: 1;
+      width: 2px; height: 2px;
+    }
+
+    /* ─── FAQ ─── */
+    #faq { background: var(--surface); }
+    .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; text-align: left; background: transparent; color: var(--text);
+      padding: 20px 24px; font-size: 15px; font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--purple-light); }
+    .faq-chevron { font-size: 18px; transition: transform 0.3s; flex-shrink: 0; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
+      font-size: 14px; color: var(--muted); line-height: 1.7; padding: 0 24px;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 20px; }
+
+    /* ─── Disclaimer ─── */
+    .disclaimer {
+      background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2);
+      border-radius: var(--radius); padding: 20px 24px; margin: 40px auto 0;
+      max-width: 720px; display: flex; gap: 14px;
+    }
+    .disclaimer-icon { font-size: 22px; flex-shrink: 0; }
+    .disclaimer p { font-size: 13px; color: rgba(245,158,11,0.9); line-height: 1.6; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 60px 24px 32px;
+    }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-top: 14px; max-width: 280px; }
+    .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; color: var(--muted); }
+    .footer-col a { display: block; font-size: 14px; color: var(--muted); margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { font-size: 13px; color: var(--subtle); }
+
+    /* ─── Cart Sidebar ─── */
+    .cart-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0); pointer-events: none; transition: background 0.3s;
+    }
+    .cart-overlay.open { background: rgba(0,0,0,0.6); pointer-events: all; }
+    .cart-sidebar {
+      position: fixed; top: 0; right: 0; height: 100vh; width: 420px; max-width: 100vw;
+      background: var(--surface); border-left: 1px solid var(--border);
+      z-index: 201; display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    }
+    .cart-sidebar.open { transform: translateX(0); }
+    .cart-header {
+      padding: 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cart-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+    .cart-close {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .cart-close:hover { color: var(--text); background: var(--card-hover); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .cart-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); }
+    .cart-empty-icon { font-size: 48px; opacity: 0.4; }
+    .cart-empty p { font-size: 14px; }
+    .cart-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 14px; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .cart-item-img {
+      width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .cart-item-sub { font-size: 12px; color: var(--muted); }
+    .cart-item-price { font-size: 15px; font-weight: 700; color: var(--purple-light); }
+    .cart-item-actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .qty-btn {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .qty-btn:hover { background: var(--card-hover); border-color: var(--border-glow); }
+    .qty-display { font-size: 14px; font-weight: 600; min-width: 20px; text-align: center; }
+    .cart-remove { margin-left: auto; color: var(--subtle); font-size: 12px; transition: color 0.2s; }
+    .cart-remove:hover { color: var(--red); }
+    .cart-footer { padding: 20px; border-top: 1px solid var(--border); }
+    .cart-subtotal {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; font-size: 14px;
+    }
+    .cart-subtotal span:last-child { font-weight: 700; font-size: 18px; }
+    .cart-note { font-size: 12px; color: var(--subtle); margin-bottom: 16px; }
+    .btn-checkout {
+      width: 100%; background: linear-gradient(135deg, var(--purple), #5b21b6);
+      color: white; padding: 14px; border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 700; transition: all 0.2s;
+      box-shadow: 0 6px 24px rgba(124,58,237,0.4);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.55); }
+
+    /* ─── Checkout Modal ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+      transform: translateY(20px) scale(0.97); transition: transform 0.3s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal-header {
+      padding: 28px 28px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 24px 28px; }
+    .modal-steps { display: flex; gap: 8px; margin-bottom: 28px; }
+    .modal-step-indicator {
+      flex: 1; height: 4px; border-radius: 2px;
+      background: var(--card); transition: background 0.3s;
+    }
+    .modal-step-indicator.done { background: var(--purple); }
+    .modal-step-indicator.active { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
+
+    /* Forms */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .form-input {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      font-size: 14px; color: var(--text); font-family: var(--font);
+      transition: all 0.2s; outline: none;
+    }
+    .form-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+    .form-input::placeholder { color: var(--subtle); }
+    .form-input.error { border-color: var(--red); }
+
+    /* Order summary in modal */
+    .order-summary-list {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px;
+    }
+    .order-summary-item {
+      padding: 12px 16px; display: flex; justify-content: space-between;
+      align-items: center; font-size: 14px; border-bottom: 1px solid var(--border);
+    }
+    .order-summary-item:last-child { border-bottom: none; }
+    .order-summary-name { font-weight: 500; }
+    .order-summary-qty { color: var(--muted); font-size: 12px; }
+    .order-summary-price { font-weight: 700; color: var(--purple-light); }
+    .order-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-top: 1px solid var(--border); margin-top: 4px;
+      font-size: 16px; font-weight: 700;
+    }
+
+    /* E-transfer instructions */
+    .etransfer-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(6,182,212,0.05));
+      border: 1px solid rgba(124,58,237,0.25); border-radius: var(--radius);
+      padding: 20px; margin-top: 16px;
+    }
+    .etransfer-box h3 {
+      font-size: 15px; font-weight: 700; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .etransfer-step {
+      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px;
+    }
+    .etransfer-step-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: var(--purple); color: white; font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .etransfer-step-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .etransfer-step-text strong { color: var(--text); }
+    .copy-field {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px 12px; font-size: 13px;
+      font-family: monospace; color: var(--cyan-light);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-top: 6px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .copy-field:hover { border-color: var(--border-glow); }
+    .copy-btn {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      background: transparent; border: none; padding: 2px 6px;
+      border-radius: 4px; background: var(--card); transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--text); }
+
+    /* Success screen */
+    .success-screen { text-align: center; padding: 20px 0; }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--green), #059669);
+      display: flex; align-items: center; justify-content: center; font-size: 32px;
+      box-shadow: 0 8px 30px rgba(16,185,129,0.35);
+    }
+    .success-screen h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+    .success-screen p { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    .order-id { font-size: 13px; color: var(--purple-light); font-family: monospace; margin-top: 8px; }
+
+    /* Notification toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 20px;
+      font-size: 14px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      z-index: 500; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 900px) {
+      .hero-content { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .hero-stats { gap: 24px; }
+      .footer-top { grid-template-columns: 1fr; }
+      .trust-inner { gap: 24px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.6s ease both; }
+    .fade-up-2 { animation: fadeUp 0.6s 0.1s ease both; }
+    .fade-up-3 { animation: fadeUp 0.6s 0.2s ease both; }
+    .fade-up-4 { animation: fadeUp 0.6s 0.3s ease both; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hero-card-main { animation: float 5s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVIGATION ═══════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon">⬡</div>
+      PureChain
+    </a>
+    <div class="nav-links">
+      <a href="#products">Products</a>
+      <a href="#why">Why Us</a>
+      <a href="#how">How to Order</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-cart" onclick="openCart()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Cart
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-eyebrow fade-up">
+        <span class="badge">⚗️ Pharmaceutical Grade</span>
+      </div>
+      <h1 class="fade-up-2">
+        Premium Peptides<br/>
+        <span class="gradient-text">For Serious Research</span>
+      </h1>
+      <p class="hero-sub fade-up-3">
+        Lab-verified, lyophilized peptides — sourced to the highest purity standards. Discreet packaging, fast Canadian shipping, and expert support.
+      </p>
+      <div class="hero-ctas fade-up-4">
+        <a href="#products" class="btn-hero-primary">
+          Shop Products
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#how" class="btn-hero-secondary">
+          How to Order
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4l3 3"/></svg>
+        </a>
+      </div>
+      <div class="hero-stats fade-up-4">
+        <div class="hero-stat">
+          <div class="hero-stat-num">99%+</div>
+          <div class="hero-stat-label">Purity Guaranteed</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">2–5 Days</div>
+          <div class="hero-stat-label">Canada Shipping</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">500+</div>
+          <div class="hero-stat-label">Happy Customers</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="hero-card-bg"></div>
+        <div class="hero-card-bg"></div>
+        <div class="hero-card-main">
+          <div class="hero-card-icon">🧬</div>
+          <div>
+            <div class="hero-card-title">BPC-157</div>
+            <div class="hero-card-sub">Body Protection Compound · 5mg lyophilized powder</div>
+          </div>
+          <div class="hero-card-tags">
+            <span class="tag">≥99% Purity</span>
+            <span class="tag cyan">HPLC Verified</span>
+            <span class="tag green">In Stock</span>
+          </div>
+          <div class="hero-card-price">$45 <span>CAD</span></div>
+        </div>
+        <div class="floating-pill tl">
+          <div class="dot"></div>
+          Lab Verified
+        </div>
+        <div class="floating-pill br" style="color: #34d399">
+          <div class="dot"></div>
+          Ships in 24h
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TRUST BAR ═══════════════ -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><span class="trust-icon">🔬</span> HPLC Verified Purity</div>
+    <div class="trust-item"><span class="trust-icon">🇨🇦</span> Ships Across Canada</div>
+    <div class="trust-item"><span class="trust-icon">📦</span> Discreet Packaging</div>
+    <div class="trust-item"><span class="trust-icon">🧊</span> Cold Chain Maintained</div>
+    <div class="trust-item"><span class="trust-icon">💬</span> Dedicated Support</div>
+    <div class="trust-item"><span class="trust-icon">💸</span> Interac e-Transfer</div>
+  </div>
+</div>
+
+<!-- ═══════════════ PRODUCTS ═══════════════ -->
+<section id="products">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="badge">🧪 Our Catalog</span></div>
+      <h2>Research-Grade Peptides</h2>
+      <p class="section-sub">Every compound is third-party tested for identity and purity before we ship it.</p>
+    </div>
+
+    <div class="product-filters">
+      <button class="filter-btn active" data-filter="all">All Products</button>
+      <button class="filter-btn" data-filter="healing">Healing</button>
+      <button class="filter-btn" data-filter="gh">GH Peptides</button>
+      <button class="filter-btn" data-filter="weight">Weight Loss</button>
+      <button class="filter-btn" data-filter="sexual">PT-141</button>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHY US ═══════════════ -->
+<section id="why">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="badge">✅ Quality First</span></div>
+      <h2>Why Researchers Choose <span class="gradient-text">PureChain</span></h2>
+      <p class="section-sub">We cut zero corners from synthesis to your door.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05));">🔬</div>
+        <h3>Third-Party Verified</h3>
+        <p>Every batch is tested by independent HPLC analysis. We publish CoAs with every order — no mystery compounds, ever.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05));">🧊</div>
+        <h3>Cold-Chain Shipping</h3>
+        <p>Peptides are shipped lyophilized and sealed. We use insulated packaging to maintain integrity during transit Canada-wide.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05));">📦</div>
+        <h3>Discreet Packaging</h3>
+        <p>Plain outer packaging with no identifying labels. Your privacy is a core part of our service, not an afterthought.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));">💬</div>
+        <h3>Expert Support</h3>
+        <p>Have questions about reconstitution, storage, or protocols? Our team is available to help you every step of the way.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.03));">💳</div>
+        <h3>Easy e-Transfer</h3>
+        <p>Pay quickly and securely with Interac e-Transfer — no CC required, no chargebacks, no hidden fees. Fast, Canadian, simple.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon" style="background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.05));">🚀</div>
+        <h3>Same-Day Processing</h3>
+        <p>Orders confirmed before 2 PM EST ship the same business day. Track your package the moment it leaves our facility.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section id="how">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="badge">📋 Simple Process</span></div>
+      <h2>Ordering Takes <span class="gradient-text">Under 3 Minutes</span></h2>
+      <p class="section-sub">No accounts, no passwords, no friction.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Add to Cart</h3>
+        <p>Browse our catalog and add your research compounds to the cart.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Enter Your Details</h3>
+        <p>Provide your shipping address and contact info at checkout.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Send e-Transfer</h3>
+        <p>Send your order total via Interac e-Transfer to our payment email.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>We Ship It</h3>
+        <p>Once payment is confirmed, we process and ship your order same day.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="badge">❓ Common Questions</span></div>
+      <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I pay via Interac e-Transfer?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">After placing your order, you will receive our payment email address and your unique order ID. Log into your online banking, send an e-Transfer for the exact order total, and include your order ID in the message field. We auto-deposit — no security question needed.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long until my order ships?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">Orders where payment is received before 2 PM EST ship the same business day. Payments after 2 PM ship the next business day. You will receive a tracking number by email once your order is dispatched. Delivery is typically 2–5 business days within Canada.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is the purity of your peptides?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">All compounds are ≥98% purity, with most achieving ≥99%. Each batch is tested by third-party HPLC and mass spectrometry. A Certificate of Analysis (CoA) is available on request and included in your shipment.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How should I store my peptides?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">Lyophilized (dry) peptides should be stored in a freezer at –20°C for long-term storage. Once reconstituted with bacteriostatic water, store at 4°C in the refrigerator and use within 30 days. Keep away from light and moisture.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do you ship outside Canada?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">Currently we ship within Canada only. We are working on expanding international shipping. Join our newsletter to be notified when international orders become available.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What if my package is damaged or lost?
+          <span class="faq-chevron">⌄</span>
+        </button>
+        <div class="faq-a">In the rare event your package arrives damaged or is lost in transit, contact us within 72 hours of the expected delivery date. We will investigate and, where appropriate, reship at no additional cost to you.</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <div class="disclaimer-icon">⚠️</div>
+      <p><strong>Research Use Only.</strong> All peptides sold by PureChain are intended strictly for legitimate scientific research purposes. These compounds are not approved for human consumption by Health Canada. By purchasing, you confirm that you are a qualified researcher using these compounds in a research setting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0">
+          <div class="logo-icon">⬡</div>
+          PureChain
+        </div>
+        <p>Premium research peptides for Canadian scientists and researchers. Purity, integrity, and service you can trust.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="#products">Healing Peptides</a>
+        <a href="#products">GH Secretagogues</a>
+        <a href="#products">Weight Loss</a>
+        <a href="#products">Sexual Health</a>
+      </div>
+      <div class="footer-col">
+        <h4>Info</h4>
+        <a href="#how">How to Order</a>
+        <a href="#faq">FAQ</a>
+        <a href="#why">About Us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:orders@purechain.ca">orders@purechain.ca</a>
+        <a href="#">Telegram Support</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 PureChain Peptides. All rights reserved.</p>
+      <p>For research purposes only. Not for human consumption.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ CART SIDEBAR ═══════════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Cart</div>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItemsList"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span id="cartTotal">$0.00</span>
+    </div>
+    <p class="cart-note">Shipping calculated at checkout · Pay by e-Transfer</p>
+    <button class="btn-checkout" onclick="openCheckout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Proceed to Checkout
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════ CHECKOUT MODAL ═══════════════ -->
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal" id="checkoutModal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Shipping Details</div>
+        <div class="modal-sub" id="modalSub">Step 1 of 2 — Where should we ship your order?</div>
+      </div>
+      <button class="modal-close" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TOAST ═══════════════ -->
+<div class="toast" id="toast">
+  <span id="toastMsg">Added to cart</span>
+</div>
+
+<!-- ═══════════════ JS ═══════════════ -->
+<script>
+  // ─── Product Data ───
+  const PRODUCTS = [
+    {
+      id: 'bpc157',
+      name: 'BPC-157',
+      fullName: 'BPC-157 (Body Protection Compound)',
+      amount: '5mg',
+      price: 45,
+      emoji: '🧬',
+      color: 'linear-gradient(135deg, #1a0a3a, #0a1a3a)',
+      category: 'healing',
+      desc: 'Powerful healing peptide studied for its regenerative properties on tendons, ligaments, and gut tissue.',
+      tags: ['≥99%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'tb500',
+      name: 'TB-500',
+      fullName: 'TB-500 (Thymosin Beta-4)',
+      amount: '5mg',
+      price: 55,
+      emoji: '💠',
+      color: 'linear-gradient(135deg, #0a2a1a, #0a1a3a)',
+      category: 'healing',
+      desc: 'Promotes healing and recovery by accelerating cellular migration and reducing inflammation.',
+      tags: ['≥98%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'cjc1295',
+      name: 'CJC-1295',
+      fullName: 'CJC-1295 (No DAC)',
+      amount: '2mg',
+      price: 38,
+      emoji: '⚡',
+      color: 'linear-gradient(135deg, #1a1a0a, #2a0a2a)',
+      category: 'gh',
+      desc: 'Growth hormone releasing hormone analogue that stimulates GH secretion in a pulsatile manner.',
+      tags: ['≥98%', 'MS Verified', '2mg vial'],
+    },
+    {
+      id: 'ipamorelin',
+      name: 'Ipamorelin',
+      fullName: 'Ipamorelin (GH Secretagogue)',
+      amount: '2mg',
+      price: 35,
+      emoji: '🔷',
+      color: 'linear-gradient(135deg, #0a2a2a, #1a0a3a)',
+      category: 'gh',
+      desc: 'A selective GH secretagogue known for clean pulsatile GH release without significantly raising cortisol.',
+      tags: ['≥99%', 'HPLC', '2mg vial'],
+    },
+    {
+      id: 'semaglutide',
+      name: 'Semaglutide',
+      fullName: 'Semaglutide (GLP-1 Analogue)',
+      amount: '5mg',
+      price: 120,
+      emoji: '🌀',
+      color: 'linear-gradient(135deg, #2a0a1a, #0a0a2a)',
+      category: 'weight',
+      desc: 'Long-acting GLP-1 receptor agonist researched extensively for metabolic function and appetite regulation.',
+      tags: ['≥98%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'tirzepatide',
+      name: 'Tirzepatide',
+      fullName: 'Tirzepatide (GIP/GLP-1)',
+      amount: '5mg',
+      price: 135,
+      emoji: '💫',
+      color: 'linear-gradient(135deg, #1a2a0a, #0a1a2a)',
+      category: 'weight',
+      desc: 'Dual GIP and GLP-1 receptor agonist — one of the most studied compounds for metabolic research.',
+      tags: ['≥98%', 'MS Verified', '5mg vial'],
+    },
+    {
+      id: 'fragment',
+      name: 'HGH Frag 176-191',
+      fullName: 'HGH Fragment 176–191',
+      amount: '5mg',
+      price: 42,
+      emoji: '🔬',
+      color: 'linear-gradient(135deg, #0a1a2a, #2a0a2a)',
+      category: 'weight',
+      desc: 'Modified form of HGH studied for its selective action on adipose tissue lipolysis without metabolic side effects.',
+      tags: ['≥99%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'pt141',
+      name: 'PT-141',
+      fullName: 'PT-141 (Bremelanotide)',
+      amount: '10mg',
+      price: 65,
+      emoji: '🌺',
+      color: 'linear-gradient(135deg, #2a0a0a, #1a0a2a)',
+      category: 'sexual',
+      desc: 'Melanocortin receptor agonist studied for its role in sexual health and desire pathways in both males and females.',
+      tags: ['≥99%', 'HPLC', '10mg vial'],
+    },
+    {
+      id: 'sermorelin',
+      name: 'Sermorelin',
+      fullName: 'Sermorelin (GHRH Analogue)',
+      amount: '5mg',
+      price: 48,
+      emoji: '✨',
+      color: 'linear-gradient(135deg, #1a0a2a, #0a2a1a)',
+      category: 'gh',
+      desc: 'First 29 amino acids of endogenous GHRH. Studied to stimulate natural GH production through the pituitary.',
+      tags: ['≥98%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'epithalon',
+      name: 'Epithalon',
+      fullName: 'Epithalon (Epitalon)',
+      amount: '10mg',
+      price: 58,
+      emoji: '🌙',
+      color: 'linear-gradient(135deg, #0a0a2a, #2a1a0a)',
+      category: 'healing',
+      desc: 'Tetrapeptide studied for telomerase activation and its potential applications in cellular longevity research.',
+      tags: ['≥99%', 'MS Verified', '10mg vial'],
+    },
+    {
+      id: 'selank',
+      name: 'Selank',
+      fullName: 'Selank (Anxiolytic Peptide)',
+      amount: '5mg',
+      price: 52,
+      emoji: '🧠',
+      color: 'linear-gradient(135deg, #0a2a2a, #2a0a1a)',
+      category: 'healing',
+      desc: 'Synthetic heptapeptide analogue of tuftsin studied for its anxiolytic, nootropic, and immune-modulating effects.',
+      tags: ['≥98%', 'HPLC', '5mg vial'],
+    },
+    {
+      id: 'ghrp6',
+      name: 'GHRP-6',
+      fullName: 'GHRP-6 (Growth Hormone Releasing Peptide)',
+      amount: '5mg',
+      price: 38,
+      emoji: '⭐',
+      color: 'linear-gradient(135deg, #1a1a0a, #0a1a1a)',
+      category: 'gh',
+      desc: 'A potent GH secretagogue that works synergistically with GHRH analogues to amplify GH pulse amplitude.',
+      tags: ['≥98%', 'HPLC', '5mg vial'],
+    },
+  ];
+
+  // ─── Cart State ───
+  let cart = [];
+  let checkoutStep = 1;
+  let orderData = {};
+  let toastTimer;
+
+  // ─── Render Products ───
+  function renderProducts(filter = 'all') {
+    const grid = document.getElementById('productsGrid');
+    const list = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+    grid.innerHTML = list.map(p => `
+      <div class="product-card" data-id="${p.id}">
+        <div class="product-img">
+          <div class="product-img-inner" style="background: ${p.color}">
+            ${p.emoji}
+          </div>
+          <div class="product-label">${p.tags[0]} Purity</div>
+          <div class="product-stock"><div class="stock-dot"></div>In Stock</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">${p.name}</div>
+          <div class="product-desc">${p.desc}</div>
+          <div class="product-meta">
+            <div class="product-amount">Lyophilized · ${p.amount}</div>
+          </div>
+        </div>
+        <div class="product-footer">
+          <div class="product-price"><sup>$</sup>${p.price} <small style="font-size:11px;color:var(--muted);font-weight:400">CAD</small></div>
+          <button class="btn-add" onclick="addToCart('${p.id}')" id="btn-${p.id}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Add
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ─── Filters ───
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderProducts(btn.dataset.filter);
+    });
+  });
+
+  // ─── Cart Logic ───
+  function addToCart(id) {
+    const product = PRODUCTS.find(p => p.id === id);
+    const existing = cart.find(i => i.id === id);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ ...product, qty: 1 });
+    }
+    updateCartUI();
+    showToast(`${product.name} added to cart ✓`);
+    const btn = document.getElementById('btn-' + id);
+    if (btn) {
+      btn.classList.add('added');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Added';
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Add';
+      }, 1800);
+    }
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(i => i.id !== id);
+    updateCartUI();
+  }
+
+  function changeQty(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    item.qty = Math.max(0, item.qty + delta);
+    if (item.qty === 0) removeFromCart(id);
+    else updateCartUI();
+  }
+
+  function getTotal() {
+    return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  }
+
+  function updateCartUI() {
+    const badge = document.getElementById('cartBadge');
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    badge.textContent = count;
+    badge.classList.toggle('visible', count > 0);
+
+    const list = document.getElementById('cartItemsList');
+    const footer = document.getElementById('cartFooter');
+
+    if (cart.length === 0) {
+      list.innerHTML = `
+        <div class="cart-empty">
+          <div class="cart-empty-icon">🛒</div>
+          <p>Your cart is empty</p>
+          <p style="font-size:12px">Browse our products and add items to get started.</p>
+        </div>`;
+      footer.style.display = 'none';
+    } else {
+      list.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-img" style="background: ${item.color}">${item.emoji}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-sub">${item.amount} · $${item.price} each</div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px">
+              <div class="cart-item-actions">
+                <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                <span class="qty-display">${item.qty}</span>
+                <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+              </div>
+              <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      footer.style.display = 'block';
+      document.getElementById('cartTotal').textContent = '$' + getTotal().toFixed(2);
+    }
+  }
+
+  // ─── Cart open/close ───
+  function openCart() {
+    document.getElementById('cartOverlay').classList.add('open');
+    document.getElementById('cartSidebar').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCart() {
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.getElementById('cartSidebar').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ─── Checkout ───
+  function openCheckout() {
+    closeCart();
+    checkoutStep = 1;
+    orderData = {};
+    renderCheckoutStep();
+    document.getElementById('checkoutOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCheckout() {
+    document.getElementById('checkoutOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderCheckoutStep() {
+    const title = document.getElementById('modalTitle');
+    const sub = document.getElementById('modalSub');
+    const body = document.getElementById('modalBody');
+
+    if (checkoutStep === 1) {
+      title.textContent = 'Shipping Details';
+      sub.textContent = 'Step 1 of 2 — Where should we ship your order?';
+      body.innerHTML = `
+        <div class="modal-steps">
+          <div class="modal-step-indicator active"></div>
+          <div class="modal-step-indicator"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input class="form-input" id="f_first" placeholder="John" value="${orderData.firstName || ''}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input class="form-input" id="f_last" placeholder="Doe" value="${orderData.lastName || ''}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input class="form-input" id="f_email" type="email" placeholder="john@example.com" value="${orderData.email || ''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input class="form-input" id="f_phone" type="tel" placeholder="(416) 555-0123" value="${orderData.phone || ''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Street Address *</label>
+          <input class="form-input" id="f_street" placeholder="123 Main Street, Apt 4B" value="${orderData.street || ''}" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input class="form-input" id="f_city" placeholder="Toronto" value="${orderData.city || ''}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Province *</label>
+            <select class="form-input" id="f_province">
+              ${['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT'].map(p =>
+                `<option value="${p}" ${(orderData.province || 'ON') === p ? 'selected' : ''}>${p}</option>`
+              ).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Postal Code *</label>
+            <input class="form-input" id="f_postal" placeholder="M5V 1A1" value="${orderData.postal || ''}" maxlength="7" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input class="form-input" value="Canada" readonly style="opacity:0.6" />
+          </div>
+        </div>
+        <button class="btn-checkout" onclick="submitStep1()" style="margin-top:8px">
+          Continue to Review
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      `;
+    } else if (checkoutStep === 2) {
+      title.textContent = 'Order Review & Payment';
+      sub.textContent = 'Step 2 of 2 — Review your order and send e-Transfer';
+      const orderId = 'PC-' + Date.now().toString(36).toUpperCase();
+      orderData.orderId = orderId;
+      body.innerHTML = `
+        <div class="modal-steps">
+          <div class="modal-step-indicator done"></div>
+          <div class="modal-step-indicator active"></div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Shipping To</div>
+          <div style="font-size:14px;font-weight:600">${orderData.firstName} ${orderData.lastName}</div>
+          <div style="font-size:13px;color:var(--muted)">${orderData.street}, ${orderData.city}, ${orderData.province} ${orderData.postal}</div>
+          <div style="font-size:13px;color:var(--muted)">${orderData.email} · ${orderData.phone}</div>
+        </div>
+
+        <div class="order-summary-list">
+          ${cart.map(item => `
+            <div class="order-summary-item">
+              <div>
+                <div class="order-summary-name">${item.name}</div>
+                <div class="order-summary-qty">${item.amount} × ${item.qty}</div>
+              </div>
+              <div class="order-summary-price">$${(item.price * item.qty).toFixed(2)}</div>
+            </div>
+          `).join('')}
+          <div class="order-summary-item">
+            <div class="order-summary-name" style="color:var(--muted)">Shipping</div>
+            <div class="order-summary-price" style="color:var(--green)">FREE</div>
+          </div>
+        </div>
+        <div class="order-total-row">
+          <span>Total Due</span>
+          <span style="color:var(--purple-light)">$${getTotal().toFixed(2)} CAD</span>
+        </div>
+
+        <div class="etransfer-box">
+          <h3>💸 Send Your e-Transfer</h3>
+          <div class="etransfer-step">
+            <div class="etransfer-step-num">1</div>
+            <div class="etransfer-step-text">Open your <strong>online banking</strong> app and go to Interac e-Transfer.</div>
+          </div>
+          <div class="etransfer-step">
+            <div class="etransfer-step-num">2</div>
+            <div class="etransfer-step-text">
+              Send <strong>$${getTotal().toFixed(2)} CAD</strong> to:
+              <div class="copy-field" onclick="copyText('orders@purechain.ca', this)">
+                orders@purechain.ca
+                <button class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+          <div class="etransfer-step">
+            <div class="etransfer-step-num">3</div>
+            <div class="etransfer-step-text">
+              In the <strong>message field</strong>, write your Order ID:
+              <div class="copy-field" onclick="copyText('${orderId}', this)">
+                ${orderId}
+                <button class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+          <div class="etransfer-step">
+            <div class="etransfer-step-num">4</div>
+            <div class="etransfer-step-text"><strong>We auto-deposit</strong> — no security question needed. Your order ships once payment is confirmed.</div>
+          </div>
+        </div>
+
+        <button class="btn-checkout" onclick="confirmOrder()" style="margin-top:20px">
+          ✓ &nbsp;I've Sent the e-Transfer
+        </button>
+        <button onclick="checkoutStep=1; renderCheckoutStep()" style="width:100%;background:transparent;color:var(--muted);padding:12px;font-size:13px;margin-top:8px;border:none;transition:color 0.2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">← Back to edit details</button>
+      `;
+    } else if (checkoutStep === 3) {
+      title.textContent = 'Order Confirmed!';
+      sub.textContent = '';
+      body.innerHTML = `
+        <div class="success-screen">
+          <div class="success-icon">✓</div>
+          <h2>Thank You, ${orderData.firstName}!</h2>
+          <p>Your order has been received. We'll ship as soon as your e-Transfer is confirmed.</p>
+          <p style="margin-top:6px">A confirmation will be sent to <strong>${orderData.email}</strong></p>
+          <div class="order-id">Order ID: ${orderData.orderId}</div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:20px;text-align:left">
+            <div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">What happens next?</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.7">
+              1. Send the e-Transfer to <strong style="color:var(--text)">orders@purechain.ca</strong><br/>
+              2. We confirm your payment (usually within 1–2 hours)<br/>
+              3. Your order ships same day if confirmed before 2 PM EST<br/>
+              4. You receive a tracking number by email
+            </div>
+          </div>
+          <button class="btn-checkout" onclick="closeCheckout(); cart=[]; updateCartUI();" style="margin-top:20px">
+            Done — Close
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  function submitStep1() {
+    const fields = {
+      firstName: document.getElementById('f_first').value.trim(),
+      lastName: document.getElementById('f_last').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      street: document.getElementById('f_street').value.trim(),
+      city: document.getElementById('f_city').value.trim(),
+      province: document.getElementById('f_province').value,
+      postal: document.getElementById('f_postal').value.trim(),
+    };
+    const missing = Object.entries(fields).filter(([,v]) => !v);
+    if (missing.length) {
+      const ids = { firstName: 'f_first', lastName: 'f_last', email: 'f_email', phone: 'f_phone', street: 'f_street', city: 'f_city', postal: 'f_postal' };
+      missing.forEach(([k]) => {
+        const el = document.getElementById(ids[k]);
+        if (el) { el.classList.add('error'); el.addEventListener('input', () => el.classList.remove('error'), { once: true }); }
+      });
+      showToast('Please fill in all required fields');
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(fields.email)) {
+      document.getElementById('f_email').classList.add('error');
+      showToast('Please enter a valid email address');
+      return;
+    }
+    orderData = { ...orderData, ...fields };
+    checkoutStep = 2;
+    renderCheckoutStep();
+  }
+
+  function confirmOrder() {
+    checkoutStep = 3;
+    renderCheckoutStep();
+  }
+
+  function copyText(text, el) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = el.querySelector('.copy-btn');
+      if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500); }
+    });
+  }
+
+  // ─── Toast ───
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ─── FAQ Toggle ───
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  // ─── Init ───
+  renderProducts();
+  updateCartUI();
+
+  // Keyboard close
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeCart(); closeCheckout(); }
+  });
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.background =
+      window.scrollY > 40 ? 'rgba(5,5,15,0.97)' : 'rgba(5,5,15,0.85)';
+  });
+</script>
+</body>
+</html>
