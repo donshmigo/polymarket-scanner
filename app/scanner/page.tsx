@@ -4,21 +4,28 @@ import { useState, useEffect, useCallback } from 'react'
 import { ParsedMarket, AISignal, FilterConfig } from '@/types'
 import MarketTable from '@/components/MarketTable'
 import SignalCard from '@/components/SignalCard'
-import { RefreshCw, SlidersHorizontal, Zap, AlertCircle } from 'lucide-react'
+import { RefreshCw, SlidersHorizontal, Zap, AlertCircle, Bot, Trophy } from 'lucide-react'
 
 const DEFAULT_FILTERS: FilterConfig = {
   minProbability: 75,
   maxProbability: 95,
   minVolume: 10000,
+  maxDays: 60,
 }
 
-function StatBadge({ label, value }: { label: string; value: string | number }) {
+function StatBadge({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
   return (
-    <div className="bg-gray-800/60 border border-gray-700/50 rounded-lg px-4 py-3">
+    <div className={`border rounded-lg px-4 py-3 ${highlight ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-gray-800/60 border-gray-700/50'}`}>
       <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-      <p className="text-lg font-semibold text-gray-100">{value}</p>
+      <p className={`text-lg font-semibold ${highlight ? 'text-emerald-400' : 'text-gray-100'}`}>{value}</p>
     </div>
   )
+}
+
+function formatVol(v: number) {
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`
+  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`
+  return `$${v}`
 }
 
 export default function ScannerPage() {
@@ -30,7 +37,10 @@ export default function ScannerPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [signals, setSignals] = useState<Record<string, AISignal>>({})
   const [analyzing, setAnalyzing] = useState<string | null>(null)
+  const [autoScanning, setAutoScanning] = useState(false)
   const [draftFilters, setDraftFilters] = useState<FilterConfig>(DEFAULT_FILTERS)
+  const [watchlistAdding, setWatchlistAdding] = useState<string | null>(null)
+  const [watchlistAdded, setWatchlistAdded] = useState<Set<string>>(new Set())
 
   const fetchMarkets = useCallback(async (f: FilterConfig) => {
     setLoading(true)
@@ -40,6 +50,7 @@ export default function ScannerPage() {
         minProb: String(f.minProbability / 100),
         maxProb: String(f.maxProbability / 100),
         minVol: String(f.minVolume),
+        maxDays: String(f.maxDays),
       })
       const res = await fetch(`/api/scanner?${params}`)
       if (!res.ok) throw new Error(`API error ${res.status}`)
@@ -66,10 +77,7 @@ export default function ScannerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(market),
       })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error ?? 'Analysis failed')
-      }
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Analysis failed')
       const signal: AISignal = await res.json()
       setSignals(prev => ({ ...prev, [market.id]: signal }))
     } catch (e) {
@@ -79,22 +87,77 @@ export default function ScannerPage() {
     }
   }
 
+  async function handleAutoScan() {
+    if (autoScanning || markets.length === 0) return
+    setAutoScanning(true)
+    // Take top 8 markets by volume for auto-scan
+    const targets = [...markets]
+      .sort((a, b) => b.volumeNum - a.volumeNum)
+      .slice(0, 8)
+      .filter(m => !signals[m.id])
+
+    for (const market of targets) {
+      setAnalyzing(market.id)
+      try {
+        const res = await fetch('/api/signals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(market),
+        })
+        if (res.ok) {
+          const signal: AISignal = await res.json()
+          setSignals(prev => ({ ...prev, [market.id]: signal }))
+        }
+      } catch {
+        // continue scanning
+      }
+      setAnalyzing(null)
+    }
+    setAutoScanning(false)
+  }
+
+  async function handleAddToWatchlist(market: ParsedMarket) {
+    if (watchlistAdding === market.id) return
+    setWatchlistAdding(market.id)
+    // If we have an AI signal, track the side it recommends; otherwise default to YES.
+    const sig = signals[market.id]
+    const position = sig?.direction === 'OVERPRICED' ? 'NO' : 'YES'
+    const entryPrice = position === 'NO' ? market.noPrice : market.yesPrice
+    try {
+      const res = await fetch('/api/watchlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          market_id: market.id,
+          question: market.question,
+          entry_price: entryPrice,
+          position,
+        }),
+      })
+      if (res.ok) {
+        setWatchlistAdded(prev => new Set([...prev, market.id]))
+      }
+    } catch (e) {
+      console.error('Watchlist error:', e)
+    } finally {
+      setWatchlistAdding(null)
+    }
+  }
+
   function applyFilters() {
     setFilters(draftFilters)
     setFiltersOpen(false)
   }
 
-  const avgProb = markets.length
-    ? (markets.reduce((s, m) => s + m.yesPrice, 0) / markets.length * 100).toFixed(1)
-    : '—'
+  // Ranked signals: highest score first, only non-FAIRLY_PRICED
+  const rankedSignals = Object.values(signals)
+    .filter(s => s.direction !== 'FAIRLY_PRICED' && s.confidenceScore >= 50)
+    .sort((a, b) => b.score - a.score)
 
   const totalVol = markets.reduce((s, m) => s + m.volumeNum, 0)
-
-  function formatVol(v: number) {
-    if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`
-    if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`
-    return `$${v}`
-  }
+  const avgDays = markets.length
+    ? Math.round(markets.reduce((s, m) => s + m.daysToResolution, 0) / markets.length)
+    : 0
 
   return (
     <div className="space-y-6">
@@ -103,8 +166,7 @@ export default function ScannerPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Market Scanner</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Active markets with YES probability {filters.minProbability}–{filters.maxProbability}% and volume &gt;{' '}
-            {formatVol(filters.minVolume)}
+            Markets resolving within {filters.maxDays} days · {filters.minProbability}–{filters.maxProbability}% YES · &gt;{formatVol(filters.minVolume)} volume
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -118,6 +180,14 @@ export default function ScannerPage() {
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filters
+          </button>
+          <button
+            onClick={handleAutoScan}
+            disabled={autoScanning || loading || markets.length === 0}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Bot className={`w-4 h-4 ${autoScanning ? 'animate-pulse' : ''}`} />
+            {autoScanning ? 'Scanning...' : 'AI Scan'}
           </button>
           <button
             onClick={() => fetchMarkets(filters)}
@@ -134,96 +204,81 @@ export default function ScannerPage() {
       {filtersOpen && (
         <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-5">
           <h3 className="text-sm font-semibold text-gray-300">Filter Settings</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
             <div>
               <label className="text-xs text-gray-400 block mb-2">
-                Min Probability: <span className="text-white font-medium">{draftFilters.minProbability}%</span>
+                Min Prob: <span className="text-white font-medium">{draftFilters.minProbability}%</span>
               </label>
-              <input
-                type="range"
-                min={50}
-                max={99}
-                value={draftFilters.minProbability}
+              <input type="range" min={50} max={99} value={draftFilters.minProbability}
                 onChange={e => setDraftFilters(prev => ({ ...prev, minProbability: Number(e.target.value) }))}
-                className="w-full accent-emerald-500"
-              />
+                className="w-full accent-emerald-500" />
             </div>
             <div>
               <label className="text-xs text-gray-400 block mb-2">
-                Max Probability: <span className="text-white font-medium">{draftFilters.maxProbability}%</span>
+                Max Prob: <span className="text-white font-medium">{draftFilters.maxProbability}%</span>
               </label>
-              <input
-                type="range"
-                min={50}
-                max={99}
-                value={draftFilters.maxProbability}
+              <input type="range" min={50} max={99} value={draftFilters.maxProbability}
                 onChange={e => setDraftFilters(prev => ({ ...prev, maxProbability: Number(e.target.value) }))}
-                className="w-full accent-emerald-500"
-              />
+                className="w-full accent-emerald-500" />
             </div>
             <div>
               <label className="text-xs text-gray-400 block mb-2">
-                Min Volume: <span className="text-white font-medium">{formatVol(draftFilters.minVolume)}</span>
+                Max Days Out: <span className="text-white font-medium">{draftFilters.maxDays}d</span>
               </label>
-              <select
-                value={draftFilters.minVolume}
+              <input type="range" min={7} max={180} step={7} value={draftFilters.maxDays}
+                onChange={e => setDraftFilters(prev => ({ ...prev, maxDays: Number(e.target.value) }))}
+                className="w-full accent-emerald-500" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 block mb-2">Min Volume</label>
+              <select value={draftFilters.minVolume}
                 onChange={e => setDraftFilters(prev => ({ ...prev, minVolume: Number(e.target.value) }))}
-                className="w-full bg-gray-800 border border-gray-600 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
-              >
+                className="w-full bg-gray-800 border border-gray-600 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
                 <option value={1000}>$1K</option>
                 <option value={5000}>$5K</option>
                 <option value={10000}>$10K</option>
                 <option value={50000}>$50K</option>
                 <option value={100000}>$100K</option>
-                <option value={500000}>$500K</option>
               </select>
             </div>
           </div>
-          <div className="flex items-center gap-3 pt-1">
-            <button
-              onClick={applyFilters}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              Apply Filters
+          <div className="flex gap-3">
+            <button onClick={applyFilters}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors">
+              Apply
             </button>
-            <button
-              onClick={() => { setDraftFilters(DEFAULT_FILTERS) }}
-              className="px-4 py-2 text-gray-400 hover:text-gray-200 text-sm transition-colors"
-            >
+            <button onClick={() => setDraftFilters(DEFAULT_FILTERS)}
+              className="px-4 py-2 text-gray-400 hover:text-gray-200 text-sm transition-colors">
               Reset
             </button>
           </div>
         </div>
       )}
 
-      {/* Stats Row */}
+      {/* Stats */}
       {!loading && !error && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatBadge label="Markets found" value={markets.length} />
-          <StatBadge label="Avg. YES prob." value={`${avgProb}%`} />
+          <StatBadge label="Avg days to resolve" value={`${avgDays}d`} highlight={avgDays <= 30} />
           <StatBadge label="Total volume" value={formatVol(totalVol)} />
-          <StatBadge
-            label="Last updated"
-            value={lastUpdated ? lastUpdated.toLocaleTimeString() : '—'}
-          />
+          <StatBadge label="AI signals" value={Object.keys(signals).length} highlight={Object.keys(signals).length > 0} />
         </div>
       )}
 
-      {/* Signal analysis results */}
-      {Object.keys(signals).length > 0 && (
+      {/* AI Opportunities — ranked signals */}
+      {rankedSignals.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-gray-400 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            AI Signals
+          <h2 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-yellow-400" />
+            Top Opportunities
+            <span className="text-xs text-gray-500 font-normal">ranked by AI confidence × edge</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {Object.entries(signals).map(([id, signal]) => (
-              <div key={id}>
-                <p className="text-xs text-gray-500 mb-1.5 truncate">{signal.question}</p>
+            {rankedSignals.map(signal => (
+              <div key={signal.marketId} className="space-y-1.5">
+                <p className="text-xs text-gray-400 truncate px-1">{signal.question}</p>
                 <SignalCard signal={signal} onClose={() => setSignals(prev => {
-                  const n = { ...prev }
-                  delete n[id]
-                  return n
+                  const n = { ...prev }; delete n[signal.marketId]; return n
                 })} />
               </div>
             ))}
@@ -231,15 +286,18 @@ export default function ScannerPage() {
         </div>
       )}
 
-      {/* Analyzing indicator */}
-      {analyzing && (
+      {/* Auto-scan progress */}
+      {(autoScanning || analyzing) && (
         <div className="flex items-center gap-2 text-sm text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-3">
-          <RefreshCw className="w-4 h-4 animate-spin" />
-          Analyzing market with Claude AI...
+          <Zap className="w-4 h-4 animate-pulse" />
+          {autoScanning ? 'Auto-scanning top markets with Claude AI...' : 'Analyzing market...'}
+          {analyzing && <span className="text-xs text-blue-300/70 truncate ml-1">
+            {markets.find(m => m.id === analyzing)?.question}
+          </span>}
         </div>
       )}
 
-      {/* Error state */}
+      {/* Error */}
       {error && (
         <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-5 py-4">
           <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
@@ -250,7 +308,7 @@ export default function ScannerPage() {
         </div>
       )}
 
-      {/* Loading skeleton */}
+      {/* Loading */}
       {loading && (
         <div className="space-y-3">
           {[...Array(6)].map((_, i) => (
@@ -261,7 +319,13 @@ export default function ScannerPage() {
 
       {/* Table */}
       {!loading && !error && (
-        <MarketTable markets={markets} onAnalyze={handleAnalyze} />
+        <MarketTable
+          markets={markets}
+          signals={signals}
+          watchlistAdded={watchlistAdded}
+          onAnalyze={handleAnalyze}
+          onAddToWatchlist={handleAddToWatchlist}
+        />
       )}
     </div>
   )
