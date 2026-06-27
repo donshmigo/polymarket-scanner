@@ -2,6 +2,17 @@ import { ParsedMarket, PolymarketMarket } from '@/types'
 
 const GAMMA_API = 'https://gamma-api.polymarket.com'
 
+function daysUntil(dateStr: string): number {
+  const diff = new Date(dateStr).getTime() - Date.now()
+  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
+function num(v: unknown): number | undefined {
+  if (v == null) return undefined
+  const n = Number(v)
+  return isNaN(n) ? undefined : n
+}
+
 function parseMarket(m: PolymarketMarket): ParsedMarket | null {
   try {
     let prices: number[] = []
@@ -15,7 +26,6 @@ function parseMarket(m: PolymarketMarket): ParsedMarket | null {
 
     const yesPrice = prices[0]
     const noPrice = prices[1]
-
     if (isNaN(yesPrice) || isNaN(noPrice)) return null
 
     return {
@@ -28,12 +38,21 @@ function parseMarket(m: PolymarketMarket): ParsedMarket | null {
       liquidity: m.liquidityNum ?? m.liquidity,
       startDate: m.startDate,
       endDate: m.endDate,
+      daysToResolution: daysUntil(m.endDate),
       category: m.category,
       active: m.active,
       closed: m.closed,
       image: m.image,
       slug: m.slug,
       conditionId: m.conditionId,
+      // microstructure / momentum — retained when present, undefined otherwise
+      volume24hr: num(m.volume24hr),
+      oneDayPriceChange: num(m.oneDayPriceChange),
+      oneHourPriceChange: num(m.oneHourPriceChange),
+      bestBid: num(m.bestBid),
+      bestAsk: num(m.bestAsk),
+      spread: num(m.spread),
+      lastTradePrice: num(m.lastTradePrice),
     }
   } catch {
     return null
@@ -67,13 +86,15 @@ export async function fetchFilteredMarkets(opts: {
   minProbability?: number
   maxProbability?: number
   minVolume?: number
+  maxDays?: number
   maxPages?: number
 }): Promise<ParsedMarket[]> {
   const {
     minProbability = 0.75,
     maxProbability = 0.95,
     minVolume = 10000,
-    maxPages = 5,
+    maxDays = 60,
+    maxPages = 8,
   } = opts
 
   const all: ParsedMarket[] = []
@@ -98,6 +119,9 @@ export async function fetchFilteredMarkets(opts: {
       const prob = parsed.yesPrice
       if (prob < minProbability || prob > maxProbability) continue
 
+      // Filter out markets resolving too far out
+      if (parsed.daysToResolution > maxDays || parsed.daysToResolution <= 0) continue
+
       all.push(parsed)
     }
 
@@ -105,10 +129,38 @@ export async function fetchFilteredMarkets(opts: {
     offset += limit
   }
 
-  return all
+  // Sort by nearest resolution first (soonest opportunities)
+  return all.sort((a, b) => a.daysToResolution - b.daysToResolution)
 }
 
-export function getMarketUrl(market: ParsedMarket): string {
+/** Fetch a single market by its Gamma id, for live re-pricing of tracked positions. */
+export async function fetchMarketById(id: string): Promise<ParsedMarket | null> {
+  try {
+    const res = await fetch(`${GAMMA_API}/markets/${id}`, {
+      next: { revalidate: 60 },
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const market = Array.isArray(data) ? data[0] : data
+    return market ? parseMarket(market) : null
+  } catch {
+    return null
+  }
+}
+
+/** Live-reprice a set of markets by id. Returns a map id -> ParsedMarket|null (graceful per-id). */
+export async function fetchMarketsByIds(ids: string[]): Promise<Record<string, ParsedMarket | null>> {
+  const unique = Array.from(new Set(ids)).slice(0, 50)
+  const results = await Promise.all(unique.map(id => fetchMarketById(id)))
+  const map: Record<string, ParsedMarket | null> = {}
+  unique.forEach((id, i) => {
+    map[id] = results[i]
+  })
+  return map
+}
+
+export function getMarketUrl(market: { slug?: string; conditionId?: string }): string {
   if (market.slug) return `https://polymarket.com/event/${market.slug}`
   if (market.conditionId) return `https://polymarket.com/market/${market.conditionId}`
   return 'https://polymarket.com'
