@@ -32,6 +32,7 @@ export type Database = {
           direction: 'OVERPRICED' | 'UNDERPRICED' | 'FAIRLY_PRICED'
           rationale: string
           edge: number
+          score: number
           created_at: string
         }
         Insert: Omit<Database['public']['Tables']['signals']['Row'], 'id' | 'created_at'>
