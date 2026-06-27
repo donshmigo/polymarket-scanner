@@ -2,8 +2,8 @@ export interface PolymarketMarket {
   id: string
   question: string
   description?: string
-  outcomePrices: string[] // JSON stringified array like ["0.82", "0.18"]
-  outcomes: string[] // JSON stringified array like ["Yes", "No"]
+  outcomePrices: string[]
+  outcomes: string[]
   volume: string
   volumeNum: number
   volumeClob?: number
@@ -32,6 +32,7 @@ export interface ParsedMarket {
   liquidity?: number
   startDate: string
   endDate: string
+  daysToResolution: number
   category?: string
   active: boolean
   closed: boolean
@@ -44,25 +45,27 @@ export interface AISignal {
   marketId: string
   question: string
   yesPrice: number
-  confidenceScore: number // 0-100
+  confidenceScore: number
   direction: 'OVERPRICED' | 'UNDERPRICED' | 'FAIRLY_PRICED'
   rationale: string
-  edge: number // estimated edge in percentage points
+  edge: number
+  score: number // composite score for ranking
   createdAt: string
 }
 
 export interface WatchlistEntry {
   id: string
-  marketId: string
+  market_id: string
   question: string
-  entryPrice: number
-  entryDate: string
+  entry_price: number
+  entry_date: string
   position: 'YES' | 'NO'
   resolved: boolean
   outcome?: boolean
-  exitPrice?: number
+  exit_price?: number
   pnl?: number
   notes?: string
+  created_at: string
 }
 
 export interface SortConfig {
@@ -74,5 +77,5 @@ export interface FilterConfig {
   minProbability: number
   maxProbability: number
   minVolume: number
-  category?: string
+  maxDays: number
 }

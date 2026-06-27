@@ -2,6 +2,11 @@ import { ParsedMarket, PolymarketMarket } from '@/types'
 
 const GAMMA_API = 'https://gamma-api.polymarket.com'
 
+function daysUntil(dateStr: string): number {
+  const diff = new Date(dateStr).getTime() - Date.now()
+  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
 function parseMarket(m: PolymarketMarket): ParsedMarket | null {
   try {
     let prices: number[] = []
@@ -15,7 +20,6 @@ function parseMarket(m: PolymarketMarket): ParsedMarket | null {
 
     const yesPrice = prices[0]
     const noPrice = prices[1]
-
     if (isNaN(yesPrice) || isNaN(noPrice)) return null
 
     return {
@@ -28,6 +32,7 @@ function parseMarket(m: PolymarketMarket): ParsedMarket | null {
       liquidity: m.liquidityNum ?? m.liquidity,
       startDate: m.startDate,
       endDate: m.endDate,
+      daysToResolution: daysUntil(m.endDate),
       category: m.category,
       active: m.active,
       closed: m.closed,
@@ -67,13 +72,15 @@ export async function fetchFilteredMarkets(opts: {
   minProbability?: number
   maxProbability?: number
   minVolume?: number
+  maxDays?: number
   maxPages?: number
 }): Promise<ParsedMarket[]> {
   const {
     minProbability = 0.75,
     maxProbability = 0.95,
     minVolume = 10000,
-    maxPages = 5,
+    maxDays = 60,
+    maxPages = 8,
   } = opts
 
   const all: ParsedMarket[] = []
@@ -98,6 +105,9 @@ export async function fetchFilteredMarkets(opts: {
       const prob = parsed.yesPrice
       if (prob < minProbability || prob > maxProbability) continue
 
+      // Filter out markets resolving too far out
+      if (parsed.daysToResolution > maxDays || parsed.daysToResolution <= 0) continue
+
       all.push(parsed)
     }
 
@@ -105,7 +115,8 @@ export async function fetchFilteredMarkets(opts: {
     offset += limit
   }
 
-  return all
+  // Sort by nearest resolution first (soonest opportunities)
+  return all.sort((a, b) => a.daysToResolution - b.daysToResolution)
 }
 
 export function getMarketUrl(market: ParsedMarket): string {
