@@ -1,17 +1,19 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ParsedMarket, SortConfig } from '@/types'
+import { ParsedMarket, AISignal, SortConfig } from '@/types'
 import { getMarketUrl } from '@/lib/polymarket'
-import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink, Plus } from 'lucide-react'
+import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink, Plus, Check, TrendingDown, TrendingUp, Minus, Loader } from 'lucide-react'
 
 interface Props {
   markets: ParsedMarket[]
+  signals?: Record<string, AISignal>
+  watchlistAdded?: Set<string>
   onAddToWatchlist?: (market: ParsedMarket) => void
   onAnalyze?: (market: ParsedMarket) => void
 }
 
-type SortableKey = 'yesPrice' | 'volumeNum' | 'endDate' | 'question'
+type SortableKey = 'yesPrice' | 'volumeNum' | 'endDate' | 'daysToResolution'
 
 function SortIcon({ column, sort }: { column: SortableKey; sort: SortConfig | null }) {
   if (!sort || sort.key !== column) return <ArrowUpDown className="w-3.5 h-3.5 opacity-40" />
@@ -20,12 +22,12 @@ function SortIcon({ column, sort }: { column: SortableKey; sort: SortConfig | nu
     : <ArrowDown className="w-3.5 h-3.5 text-emerald-400" />
 }
 
-function ProbabilityBar({ value }: { value: number }) {
+function ProbBar({ value }: { value: number }) {
   const pct = Math.round(value * 100)
   const color = pct >= 85 ? 'bg-emerald-500' : pct >= 75 ? 'bg-blue-500' : 'bg-amber-500'
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+      <div className="w-14 h-1.5 bg-gray-700 rounded-full overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
       <span className="font-mono text-sm font-semibold">{pct}%</span>
@@ -33,32 +35,36 @@ function ProbabilityBar({ value }: { value: number }) {
   )
 }
 
-function formatVolume(v: number) {
+function SignalBadge({ signal }: { signal: AISignal }) {
+  const cfg = {
+    OVERPRICED: { label: 'Over', color: 'text-red-400 bg-red-500/10 border-red-500/20', icon: TrendingDown },
+    UNDERPRICED: { label: 'Under', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', icon: TrendingUp },
+    FAIRLY_PRICED: { label: 'Fair', color: 'text-gray-400 bg-gray-700/50 border-gray-600/30', icon: Minus },
+  }[signal.direction]
+  const Icon = cfg.icon
+  return (
+    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium ${cfg.color}`}>
+      <Icon className="w-3 h-3" />
+      {cfg.label} {signal.confidenceScore}%
+    </div>
+  )
+}
+
+function formatVol(v: number) {
   if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`
   if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`
   return `$${v}`
 }
 
-function formatDate(d: string) {
-  const date = new Date(d)
-  if (isNaN(date.getTime())) return '—'
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function daysUntil(d: string): number {
-  const diff = new Date(d).getTime() - Date.now()
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
-}
-
-export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Props) {
-  const [sort, setSort] = useState<SortConfig | null>({ key: 'volumeNum', direction: 'desc' })
+export default function MarketTable({ markets, signals = {}, watchlistAdded = new Set(), onAddToWatchlist, onAnalyze }: Props) {
+  const [sort, setSort] = useState<SortConfig | null>({ key: 'daysToResolution', direction: 'asc' })
   const [search, setSearch] = useState('')
 
   function toggleSort(key: SortableKey) {
     setSort(prev =>
       prev?.key === key
         ? { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
-        : { key, direction: 'desc' }
+        : { key, direction: 'asc' }
     )
   }
 
@@ -86,10 +92,7 @@ export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Pr
       className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-200 transition-colors"
       onClick={() => toggleSort(col)}
     >
-      <div className="flex items-center gap-1.5">
-        {label}
-        <SortIcon column={col} sort={sort} />
-      </div>
+      <div className="flex items-center gap-1.5">{label}<SortIcon column={col} sort={sort} /></div>
     </th>
   )
 
@@ -110,13 +113,11 @@ export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Pr
         <table className="w-full">
           <thead className="bg-gray-900 border-b border-gray-800">
             <tr>
-              <Th col="question" label="Market" />
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Market</th>
               <Th col="yesPrice" label="YES Prob." />
+              <Th col="daysToResolution" label="Resolves In" />
               <Th col="volumeNum" label="Volume" />
-              <Th col="endDate" label="Resolves" />
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Category
-              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">AI Signal</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -124,16 +125,19 @@ export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Pr
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-gray-500 text-sm">
-                  No markets match the current filters.
+                  No markets match current filters.
                 </td>
               </tr>
             )}
             {filtered.map(m => {
-              const days = daysUntil(m.endDate)
-              const urgency = days <= 7 ? 'text-red-400' : days <= 30 ? 'text-amber-400' : 'text-gray-400'
+              const signal = signals[m.id]
+              const days = m.daysToResolution
+              const urgency = days <= 7 ? 'text-red-400 font-semibold' : days <= 21 ? 'text-amber-400' : 'text-gray-400'
+              const added = watchlistAdded.has(m.id)
+
               return (
-                <tr key={m.id} className="hover:bg-gray-800/40 transition-colors group">
-                  <td className="px-4 py-4 max-w-md">
+                <tr key={m.id} className={`hover:bg-gray-800/40 transition-colors group ${signal && signal.direction !== 'FAIRLY_PRICED' && signal.confidenceScore >= 60 ? 'border-l-2 border-l-emerald-500/40' : ''}`}>
+                  <td className="px-4 py-4 max-w-xs">
                     <a
                       href={getMarketUrl(m)}
                       target="_blank"
@@ -143,35 +147,27 @@ export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Pr
                       <span className="line-clamp-2 leading-snug">{m.question}</span>
                       <ExternalLink className="w-3 h-3 mt-0.5 opacity-0 group-hover/link:opacity-60 shrink-0 transition-opacity" />
                     </a>
+                    {m.category && (
+                      <span className="mt-1 inline-flex px-1.5 py-0.5 rounded text-xs bg-gray-800 text-gray-500">{m.category}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-4"><ProbBar value={m.yesPrice} /></td>
+                  <td className="px-4 py-4">
+                    <span className={`text-sm font-mono ${urgency}`}>{days}d</span>
                   </td>
                   <td className="px-4 py-4">
-                    <ProbabilityBar value={m.yesPrice} />
+                    <span className="text-sm font-mono text-gray-300">{formatVol(m.volumeNum)}</span>
                   </td>
                   <td className="px-4 py-4">
-                    <span className="text-sm font-mono text-gray-300">{formatVolume(m.volumeNum)}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div>
-                      <p className="text-sm text-gray-300">{formatDate(m.endDate)}</p>
-                      {!isNaN(days) && (
-                        <p className={`text-xs mt-0.5 ${urgency}`}>
-                          {days > 0 ? `${days}d left` : 'Expired'}
-                        </p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    {m.category ? (
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">
-                        {m.category}
-                      </span>
+                    {signal ? (
+                      <SignalBadge signal={signal} />
                     ) : (
-                      <span className="text-gray-600 text-xs">—</span>
+                      <span className="text-xs text-gray-600">—</span>
                     )}
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {onAnalyze && (
+                      {onAnalyze && !signal && (
                         <button
                           onClick={() => onAnalyze(m)}
                           className="px-2.5 py-1 text-xs rounded-md bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 transition-colors"
@@ -181,10 +177,15 @@ export default function MarketTable({ markets, onAddToWatchlist, onAnalyze }: Pr
                       )}
                       {onAddToWatchlist && (
                         <button
-                          onClick={() => onAddToWatchlist(m)}
-                          className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                          onClick={() => !added && onAddToWatchlist(m)}
+                          disabled={added}
+                          className={`p-1.5 rounded-md border transition-colors ${
+                            added
+                              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 cursor-default'
+                              : 'bg-gray-700/50 text-gray-400 hover:bg-emerald-500/10 hover:text-emerald-400 border-gray-600 hover:border-emerald-500/30'
+                          }`}
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          {added ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
                         </button>
                       )}
                     </div>
